@@ -113,6 +113,7 @@ void showKeySender(bool &show_key_sender, HWND selected_hwnd)
     execute_flag = true;
 
     if (!executeSender) {
+      executeSender.store(true);
       std::thread t(SendKeyEvent, selected_hwnd);
       t.detach();
     }
@@ -123,6 +124,7 @@ void showKeySender(bool &show_key_sender, HWND selected_hwnd)
 
   ImGui::Checkbox("執行", &execute_flag);
   if (execute_flag && !executeSender) {
+    executeSender.store(true);
     std::thread t(SendKeyEvent, selected_hwnd);
     t.detach();
   }
