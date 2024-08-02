@@ -50,6 +50,22 @@ namespace handler_detail {
     return TRUE;
   }
 
+  static BOOL CALLBACK EnumChildWindowsProc(HWND hwnd, LPARAM lParam)
+  {
+    std::vector<std::pair<HWND, std::string>> *child_handles = reinterpret_cast<std::vector<std::pair<HWND, std::string>> *>(lParam);
+
+    const int length = GetWindowTextLength(hwnd);
+    std::unique_ptr<char[]> buffer = std::make_unique<char[]>(length + 1);
+    GetWindowText(hwnd, buffer.get(), length + 1);
+
+    if (IsWindowVisible(hwnd) && length > 1) {
+      std::string text = Big5ToUtf8(buffer.get());
+      child_handles->push_back(std::make_pair(hwnd, text));
+    }
+
+    return TRUE;
+  }
+
 }    // namespace handler_detail
 
 void showHandler(bool &show_handler, HWND &selected_hwnd)
@@ -57,9 +73,11 @@ void showHandler(bool &show_handler, HWND &selected_hwnd)
   using namespace handler_detail;
 
   static std::vector<std::pair<HWND, std::string>> handles;
+  static std::vector<std::pair<HWND, std::string>> child_handles;
+
   ImGui::Begin("HANDLER", &show_handler);
 
-  if (ImGui::Button("Scan Handles")) {
+  if (ImGui::Button("掃描視窗")) {
     handles.clear();
     EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&handles));
   }
@@ -68,7 +86,7 @@ void showHandler(bool &show_handler, HWND &selected_hwnd)
   if (!handles.empty()) {
     if (selected > -1) {
       ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 0, 255));
-      ImGui::Text("Selected %p %s", handles[selected].first, handles[selected].second.c_str());
+      ImGui::Text("你選擇了「%s」視窗，hwnd: %p", handles[selected].second.c_str(), handles[selected].first);
       ImGui::PopStyleColor();
     }
 
@@ -78,8 +96,27 @@ void showHandler(bool &show_handler, HWND &selected_hwnd)
       if (ImGui::Selectable(title, selected == n)) {
         selected = n;
         selected_hwnd = handles[n].first;
+        child_handles.clear();
+        EnumChildWindows(selected_hwnd, EnumChildWindowsProc, reinterpret_cast<LPARAM>(&child_handles));
       }
     }
+  }
+
+  if (ImGui::TreeNode("Child Windows")) {
+    ImGui::TextDisabled("(?)");
+    if (ImGui::BeginItemTooltip()) {
+      ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+      ImGui::TextUnformatted("這邊會顯示你選取視窗的子視窗，現在還只實作了顯示功能，沒有辦法選取");
+      ImGui::PopTextWrapPos();
+      ImGui::EndTooltip();
+    }
+
+    if (!child_handles.empty()) {
+      for (const auto &child_handle : child_handles) {
+        ImGui::Text("CHILD HANDLE: %p TITLE: %s\n", child_handle.first, child_handle.second.c_str());
+      }
+    }
+    ImGui::TreePop();
   }
 
   if (ImGui::TreeNode("Details")) {

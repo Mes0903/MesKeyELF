@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(TroveAFK)
+project(MesKeyELF)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -30,24 +30,24 @@ else()
 endif()
 
 set(THIRD_DIR ${PROJECT_SOURCE_DIR}/3rdparty)
-set(TroveAFK_Dir ${PROJECT_SOURCE_DIR}/include)
+set(MesKeyELF_Dir ${PROJECT_SOURCE_DIR}/core)
 
 add_subdirectory(${THIRD_DIR})
 
 add_executable(
   ${PROJECT_NAME} 
-  ${TroveAFK_Dir}/src/showHandler.cpp
-  ${TroveAFK_Dir}/src/KeyCommon.cpp
-  ${TroveAFK_Dir}/src/showKeyConfigurator.cpp
-  ${TroveAFK_Dir}/src/showKeySender.cpp
-  ${TroveAFK_Dir}/src/showScreen.cpp
-  ${PROJECT_SOURCE_DIR}/src/TroveAFK.cpp
+  ${MesKeyELF_Dir}/src/showHandler.cpp
+  ${MesKeyELF_Dir}/src/KeyCommon.cpp
+  ${MesKeyELF_Dir}/src/showKeyConfigurator.cpp
+  ${MesKeyELF_Dir}/src/showKeySender.cpp
+  ${MesKeyELF_Dir}/src/showScreen.cpp
+  ${PROJECT_SOURCE_DIR}/src/MesKeyELF.cpp
 )
 
 target_include_directories(
   ${PROJECT_NAME}
   PRIVATE
-    ${TroveAFK_Dir}/header
+    ${MesKeyELF_Dir}/header
     ${THIRD_DIR}/imgui
     ${THIRD_DIR}/implot
     ${THIRD_DIR}/glfw/include

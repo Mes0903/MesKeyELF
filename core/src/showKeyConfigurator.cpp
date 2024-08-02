@@ -12,6 +12,8 @@ void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
 
   if (ImGui::TreeNode("新增按鍵事件")) {
     // 顯示說明
+    ImGui::Text("設定按鍵事件與時間");
+    ImGui::SameLine();
     ImGui::TextDisabled("(?)");
     if (ImGui::BeginItemTooltip()) {
       ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
@@ -21,18 +23,20 @@ void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
     }
 
     // 配置選中的按鍵事件
-    static KeyEvent event{};
-    ImGui::Text("Configure Key Event");
+    static KeyEvent event;
     ImGui::Combo("按鍵", reinterpret_cast<int *>(&event.key), keySet, IM_ARRAYSIZE(keySet));
     ImGui::InputInt("持續按下幾 ms", &event.pressDuration);
     ImGui::InputInt("按完後等待幾 ms", &event.interval);
 
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4) ImColor(255, 0, 0));
-    if (ImGui::Button("新增按鍵")) {
-      keyEvents.push_back(event);
-      event = KeyEvent{};
+    if (!executeSender) {
+      // ImGui::BeginDisabled(executeSender);
+      ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4) ImColor(255, 0, 0));
+      if (ImGui::Button("新增按鍵")) {
+        keyEvents.push_back(event);
+      }
+      ImGui::PopStyleColor();
+      // ImGui::EndDisabled();
     }
-    ImGui::PopStyleColor();
 
     ImGui::TreePop();
   }
@@ -50,7 +54,7 @@ void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
     // 顯示按鍵事件列表
     for (int i = 0; i < keyEvents.size(); ++i) {
       const KeyEvent event = keyEvents[i];
-      std::string label = std::string(keySet[GetKeySetIndex(event.key)]) + " 按壓 " + std::to_string(event.pressDuration) + " ms 後等待 " + std::to_string(event.interval) + " ms";
+      std::string label = std::string(keySet[event.key]) + " 按壓 " + std::to_string(event.pressDuration) + " ms 後等待 " + std::to_string(event.interval) + " ms";
       ImGui::Selectable(label.c_str());
 
       if (ImGui::IsItemActive() && !ImGui::IsItemHovered()) {
@@ -63,7 +67,7 @@ void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
 
         for (int i = 0; i < keyEvents.size(); ++i) {
           const KeyEvent event = keyEvents[i];
-          std::string label = std::string(keySet[GetKeySetIndex(event.key)]) + " 按壓 " + std::to_string(event.pressDuration) + " ms 後等待 " + std::to_string(event.interval) + " ms";
+          std::string label = std::string(keySet[event.key]) + " 按壓 " + std::to_string(event.pressDuration) + " ms 後等待 " + std::to_string(event.interval) + " ms";
           std::cerr << label << std::endl;
         }
       }
