@@ -18,6 +18,7 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+#include "showMenu.h"
 #include "showHandler.h"
 #include "showKeySender.h"
 #include "showKeyConfigurator.h"
@@ -76,11 +77,9 @@ int main(int, char **)
   ImGui::CreateContext();
   ImPlot::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
-  io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\msyh.ttc", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
+  io.Fonts->AddFontFromFileTTF("./msyh.ttc", 16.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
   io.Fonts->Build();
-  // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable
-  // Keyboard Controls io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; //
-  // Enable Gamepad Controls
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;    // Enable
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
@@ -95,11 +94,7 @@ int main(int, char **)
   if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     throw std::runtime_error("Failed to initialize GLAD");
 
-  bool show_demo_window = true;
-  bool show_handler = true;
-  bool show_key_configurator = true;
-  bool show_key_sender = true;
-  bool show_screen = true;
+  DisplayFlags display;
   HWND target_hwnd = nullptr;
 
   while (!glfwWindowShouldClose(window)) {
@@ -109,20 +104,22 @@ int main(int, char **)
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    if (show_demo_window)
-      ImGui::ShowDemoWindow(&show_demo_window);
+    showMenu(display);
 
-    if (show_handler)
-      showHandler(show_handler, target_hwnd);
+    if (display.show_demo_window)
+      ImGui::ShowDemoWindow(&display.show_demo_window);
 
-    if (show_key_configurator)
-      showKeyConfigurator(show_key_configurator, target_hwnd);
+    if (display.show_handler)
+      showHandler(display.show_handler, target_hwnd);
 
-    if (show_key_sender)
-      showKeySender(show_key_sender, target_hwnd);
+    if (display.show_key_configurator)
+      showKeyConfigurator(display.show_key_configurator, target_hwnd);
 
-    if (show_screen)
-      showScreen(show_screen, target_hwnd);
+    if (display.show_key_sender)
+      showKeySender(display.show_key_sender, target_hwnd);
+
+    if (display.show_screen)
+      showScreen(display.show_screen, target_hwnd);
 
     ImGui::Render();
     int display_w, display_h;
