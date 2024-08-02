@@ -37,6 +37,7 @@ add_subdirectory(${THIRD_DIR})
 add_executable(
   ${PROJECT_NAME} 
   ${MesKeyELF_Dir}/src/showHandler.cpp
+  ${MesKeyELF_Dir}/src/showMenu.cpp
   ${MesKeyELF_Dir}/src/showKeyConfigurator.cpp
   ${MesKeyELF_Dir}/src/showKeySender.cpp
   ${MesKeyELF_Dir}/src/showScreen.cpp
@@ -62,3 +63,5 @@ target_link_libraries(
   glad
   ${OPENGL_LIBRARIES}
 )
+
+file(COPY ${PROJECT_SOURCE_DIR}/font DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
