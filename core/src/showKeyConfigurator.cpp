@@ -8,7 +8,7 @@ void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
 {
   static int selectedKey = -1;
 
-  ImGui::Begin("Key Event Configurator");
+  ImGui::Begin("Key Event Configurator", &show_key_sender);
 
   if (ImGui::TreeNode("新增按鍵事件")) {
     // 顯示說明
