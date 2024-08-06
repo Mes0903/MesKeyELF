@@ -65,7 +65,7 @@ int main(int, char **)
 #endif
 
   // Create window with graphics context
-  GLFWwindow *window = glfwCreateWindow(1280, 720, "Mes Trove Script", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(1280, 720, "Mes Key ELF", NULL, NULL);
   if (window == NULL)
     return 1;
 
