@@ -6,7 +6,7 @@
 
 void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
 {
-  static int selectedKey = -1;
+  static int selected = -1;
 
   ImGui::Begin("Key Event Configurator", &show_key_sender);
 
@@ -34,6 +34,21 @@ void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
       if (ImGui::Button("新增按鍵")) {
         keyEvents.push_back(event);
       }
+
+      ImGui::SameLine();
+      if (ImGui::Button("刪除已選按鍵")) {
+        if (selected >= 0 && selected < keyEvents.size()) {
+          keyEvents.erase(keyEvents.begin() + selected);
+          selected = -1;
+        }
+      }
+
+      ImGui::SameLine();
+      if (ImGui::Button("清空按鍵")) {
+        keyEvents.clear();
+        selected = -1;
+      }
+
       ImGui::PopStyleColor();
       // ImGui::EndDisabled();
     }
@@ -55,20 +70,16 @@ void showKeyConfigurator(bool &show_key_sender, const HWND &selected_hwnd)
     for (int i = 0; i < keyEvents.size(); ++i) {
       const KeyEvent event = keyEvents[i];
       std::string label = std::string(keySet[event.key]) + " 按壓 " + std::to_string(event.pressDuration) + " ms 後等待 " + std::to_string(event.interval) + " ms";
-      ImGui::Selectable(label.c_str());
+      if (ImGui::Selectable(label.c_str(), selected == i))
+        selected = i;
 
       if (ImGui::IsItemActive() && !ImGui::IsItemHovered()) {
         int n_next = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
         if (n_next >= 0 && n_next < keyEvents.size()) {
           keyEvents[i] = keyEvents[n_next];
           keyEvents[n_next] = event;
+          selected = n_next;
           ImGui::ResetMouseDragDelta();
-        }
-
-        for (int i = 0; i < keyEvents.size(); ++i) {
-          const KeyEvent event = keyEvents[i];
-          std::string label = std::string(keySet[event.key]) + " 按壓 " + std::to_string(event.pressDuration) + " ms 後等待 " + std::to_string(event.interval) + " ms";
-          std::cerr << label << std::endl;
         }
       }
     }
